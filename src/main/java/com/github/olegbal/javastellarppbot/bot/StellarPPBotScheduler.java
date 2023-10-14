@@ -29,7 +29,7 @@ public class StellarPPBotScheduler {
         this.horizonServers = horizonServers;
     }
 
-    @Scheduled(cron = "* * * * * *")
+    @Scheduled(cron = "* */2 * * * *")
     public void stellarBotStarter() throws IOException {
         Server server = horizonServers.get(HORIZON_INDEX);
 
