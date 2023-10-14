@@ -1,2 +1,7 @@
 stellar:
   horizons: https://horizon.stellar.org, https://stellarterm.com/horizon
+
+logging:
+  file:
+    path: ./
+    name: "server.log"
