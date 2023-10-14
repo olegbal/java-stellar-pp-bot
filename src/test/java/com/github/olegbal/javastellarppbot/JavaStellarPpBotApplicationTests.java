@@ -1,4 +1,4 @@
-package com.github.olegbal.javastellarppbot.javastellarppbot;
+package com.github.olegbal.javastellarppbot;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
