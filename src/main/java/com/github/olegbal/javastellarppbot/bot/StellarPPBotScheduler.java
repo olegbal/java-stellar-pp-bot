@@ -7,6 +7,7 @@ import org.stellar.sdk.Asset;
 import org.stellar.sdk.AssetTypeNative;
 import org.stellar.sdk.Server;
 import org.stellar.sdk.requests.StrictSendPathsRequestBuilder;
+import org.stellar.sdk.responses.Page;
 import org.stellar.sdk.responses.PathResponse;
 import org.stellar.sdk.xdr.AssetType;
 
@@ -27,12 +28,10 @@ public class StellarPPBotScheduler {
         this.horizonServerManager = horizonServerManager;
     }
 
-    @Scheduled(timeUnit = TimeUnit.SECONDS, fixedRate = 10)
+    @Scheduled(timeUnit = TimeUnit.SECONDS, fixedRate = 2)
     public void stellarBotStarter() {
         try {
             Server server = horizonServerManager.getRelevantServer();
-            log.info("SERVER URL {}" , server);
-
             StrictSendPathsRequestBuilder xlmStrictSendPath = server.strictSendPaths();
 
             Asset yxlmAsset = Asset.create(
@@ -41,7 +40,7 @@ public class StellarPPBotScheduler {
 
             ArrayList<PathResponse> xlmPaths = xlmStrictSendPath
                     .sourceAsset(new AssetTypeNative())
-                    .sourceAmount("1000")
+                    .sourceAmount("100")
                     .destinationAssets(List.of(yxlmAsset)
                     ).execute().getRecords();
 
