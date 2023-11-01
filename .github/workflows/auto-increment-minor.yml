@@ -10,7 +10,7 @@ on:
 
 jobs:
   increment-patch:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
 
     steps:
       #     Wait for the  finishing of build phase
