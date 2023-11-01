@@ -1,0 +1,11 @@
+services:
+  bot:
+    image: olegbal/stellar-pp-java-bot:latest
+    container_name: pp-bot
+    ports:
+      - "8080:8080"
+#  grafana:
+#    image: grafana/grafana-oss:latest
+#    ports:
+#      - "3000:3000"
+#    container_name: grafana-monitoring
