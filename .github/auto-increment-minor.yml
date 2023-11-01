@@ -1,0 +1,47 @@
+name: Auto increment patch version in pull request branch targeted to develop
+
+on:
+  workflow_dispatch:
+    pull_request_target:
+      types:
+        - opened
+      branches:
+        - develop
+
+jobs:
+  increment-patch:
+    runs-on: ubuntu-18.04
+
+    steps:
+      #     Wait for the  finishing of build phase
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # otherwise, there would be errors pushing refs to the destination repository.
+      - name: Wait for complete build
+        uses: tomchv/wait-my-workflow@v1.1.0
+        id: wait-build
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          checkName: build
+          intervalSeconds: 20
+          timeoutSeconds: 300
+
+      #     Fail if build failed
+      - name: Check on fail
+        if: ${{ steps.wait-build.outputs.conclusion == 'does not exist' || steps.wait-build.outputs.conclusion == 'failure' || steps.wait-build.outputs.conclusion == 'timed_out' }}
+        run: echo workflow build failed  && false
+
+      #     Auto increment patch version
+      - name: Increment patch
+        run: ./gradlew incrementPatch
+      #     Commit and push incremented version
+      - name: Commit files
+        run: |
+          git config --local user.email "autoincementer@olegbal.github.com"
+          git config --local user.name "autoincrementer"
+          git commit -m "bump patch version" -a
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.head_ref }}
