@@ -12,16 +12,16 @@ jobs:
     steps:
       #           Wait for the  finishing of build phase
       - uses: actions/checkout@v2
-                - name: Wait for complete build
-                uses: tomchv/wait-my-workflow@v1.1.0
-                id: wait-increment
-                with:
-                  token: ${{ secrets.GITHUB_TOKEN }}
-                  checkName: increment-patch
-                  intervalSeconds: 20
-                  timeoutSeconds: 300
+      - name: Wait for complete build
+        uses: tomchv/wait-my-workflow@v1.1.0
+        id: wait-increment
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          checkName: increment-patch
+          intervalSeconds: 20
+          timeoutSeconds: 300
 
-                Fail if build failed
+      #                Fail if build failed
       - name: Check on fail
         if: ${{ steps.wait-increment.outputs.conclusion == 'does not exist' || steps.wait-increment.outputs.conclusion == 'failure' || steps.wait-increment.outputs.conclusion == 'timed_out' }}
         run: echo workflow build failed  && false
