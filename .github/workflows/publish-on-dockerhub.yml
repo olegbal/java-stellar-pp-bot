@@ -59,6 +59,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
+          platforms: linux/amd64,linux/arm64
           file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/stellar-pp-java-bot:${{ steps.global_env.outputs.CONTAINER_VERSION }}, ${{ secrets.DOCKERHUB_USERNAME }}/stellar-pp-java-bot:latest
