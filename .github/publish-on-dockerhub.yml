@@ -1,0 +1,64 @@
+name: Build jar and upload to dockerhub
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'develop'
+jobs:
+
+  build_docker_image:
+    runs-on: ubuntu-18.04
+    steps:
+      #           Wait for the  finishing of build phase
+      - uses: actions/checkout@v2
+                - name: Wait for complete build
+                uses: tomchv/wait-my-workflow@v1.1.0
+                id: wait-increment
+                with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  checkName: increment-patch
+                  intervalSeconds: 20
+                  timeoutSeconds: 300
+
+                Fail if build failed
+      - name: Check on fail
+        if: ${{ steps.wait-increment.outputs.conclusion == 'does not exist' || steps.wait-increment.outputs.conclusion == 'failure' || steps.wait-increment.outputs.conclusion == 'timed_out' }}
+        run: echo workflow build failed  && false
+      #     Setup java 17:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'corretto'
+      #    Build jar
+      - name: Build jar
+        run: |
+          git fetch
+          git pull origin ${GITHUB_REF##*/}
+          ./gradlew bootJar
+
+      #     Set global environment variables:
+      - name: Set global env
+        id: global_env
+        run: |
+          containerVersion=$(awk -F "=" '/version.semver/{print $2}' version.properties)
+          echo "::set-output name=CONTAINER_VERSION::$containerVersion"
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/stellar-pp-java-bot:${{ steps.global_env.outputs.CONTAINER_VERSION }} ${{ secrets.DOCKERHUB_USERNAME }}/stellar-pp-java-bot:latest
