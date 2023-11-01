@@ -34,43 +34,11 @@ public class StellarPPBotScheduler {
             Server server = horizonServers.get(HORIZON_INDEX);
 
             StrictSendPathsRequestBuilder xlmStrictSendPath = server.strictSendPaths();
-            StrictSendPathsRequestBuilder btcStrictSendPath = server.strictSendPaths();
-            StrictSendPathsRequestBuilder ethStrictSendPath = server.strictSendPaths();
-            StrictSendPathsRequestBuilder usdcStrictSendPath = server.strictSendPaths();
 
             Asset yxlmAsset = Asset.create(
                     AssetType.ASSET_TYPE_CREDIT_ALPHANUM4.name(), "yXLM", "GARDNV3Q7YGT4AKSDF25LT32YSCCW4EV22Y2TV3I2PU2MMXJTEDL5T55"
             );
-            Asset btcAsset = Asset.create(
-                    AssetType.ASSET_TYPE_CREDIT_ALPHANUM4.name(), "BTC", "GDPJALI4AZKUU2W426U5WKMAT6CN3AJRPIIRYR2YM54TL2GDWO5O2MZM");
 
-            Asset yBtcAsset = Asset.create(
-                    AssetType.ASSET_TYPE_CREDIT_ALPHANUM4.name(), "yBTC", "GBUVRNH4RW4VLHP4C5MOF46RRIRZLAVHYGX45MVSTKA2F6TMR7E7L6NW"
-            );
-
-            Asset ethAsset = Asset.create(
-                    AssetType.ASSET_TYPE_CREDIT_ALPHANUM4.name(),
-                    "ETH",
-                    "GBFXOHVAS43OIWNIO7XLRJAHT3BICFEIKOJLZVXNT572MISM4CMGSOCC"
-            );
-
-            Asset yethAsset = Asset.create(
-                    AssetType.ASSET_TYPE_CREDIT_ALPHANUM4.name(),
-                    "yETH",
-                    "GDYQNEF2UWTK4L6HITMT53MZ6F5QWO3Q4UVE6SCGC4OMEQIZQQDERQFD"
-            );
-
-            Asset usdcAsset = Asset.create(
-                    AssetType.ASSET_TYPE_CREDIT_ALPHANUM4.name(),
-                    "USDC",
-                    "GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN"
-            );
-
-            Asset yusdcAsset = Asset.create(
-                    AssetType.ASSET_TYPE_CREDIT_ALPHANUM12.name(),
-                    "yUSDC",
-                    "GDGTVWSM4MGS4T7Z6W4RPWOCHE2I6RDFCIFZGS3DOA63LWQTRNZNTTFF"
-            );
 
             ArrayList<PathResponse> xlmPaths = xlmStrictSendPath
                     .sourceAsset(new AssetTypeNative())
@@ -78,25 +46,7 @@ public class StellarPPBotScheduler {
                     .destinationAssets(List.of(yxlmAsset)
                     ).execute().getRecords();
 
-            ArrayList<PathResponse> btcPaths = btcStrictSendPath
-                    .sourceAsset(btcAsset)
-                    .sourceAmount("0.0004")
-                    .destinationAssets(List.of(yBtcAsset))
-                    .execute().getRecords();
-
-            ArrayList<PathResponse> ethPaths = ethStrictSendPath
-                    .sourceAsset(ethAsset)
-                    .sourceAmount("0.006")
-                    .destinationAssets(List.of(yethAsset))
-                    .execute().getRecords();
-
-//            ArrayList<PathResponse> usdcPaths = usdcStrictSendPath
-//                    .sourceAsset(usdcAsset)
-//                    .sourceAmount("10")
-//                    .destinationAssets(List.of(yusdcAsset))
-//                    .execute().getRecords();
-
-            List<PathResponse> list = Stream.of(xlmPaths, btcPaths, ethPaths)
+            Stream.of(xlmPaths)
                     .flatMap(List::stream)
                     .filter(pathResponse -> {
                         BigDecimal sourceAmount = new BigDecimal(pathResponse.getSourceAmount());
