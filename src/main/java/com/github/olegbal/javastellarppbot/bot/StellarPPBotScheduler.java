@@ -21,17 +21,17 @@ import java.util.stream.Stream;
 @Slf4j
 public class StellarPPBotScheduler {
 
-    private final List<Server> horizonServers;
-    private static int HORIZON_INDEX = 0;
+    private final HorizonServerManager horizonServerManager;
 
-    public StellarPPBotScheduler(List<Server> horizonServers) {
-        this.horizonServers = horizonServers;
+    public StellarPPBotScheduler(HorizonServerManager horizonServerManager) {
+        this.horizonServerManager = horizonServerManager;
     }
 
     @Scheduled(timeUnit = TimeUnit.SECONDS, fixedRate = 10)
     public void stellarBotStarter() {
         try {
-            Server server = horizonServers.get(HORIZON_INDEX);
+            Server server = horizonServerManager.getRelevantServer();
+            log.info("SERVER URL {}" , server);
 
             StrictSendPathsRequestBuilder xlmStrictSendPath = server.strictSendPaths();
 
@@ -39,10 +39,9 @@ public class StellarPPBotScheduler {
                     AssetType.ASSET_TYPE_CREDIT_ALPHANUM4.name(), "yXLM", "GARDNV3Q7YGT4AKSDF25LT32YSCCW4EV22Y2TV3I2PU2MMXJTEDL5T55"
             );
 
-
             ArrayList<PathResponse> xlmPaths = xlmStrictSendPath
                     .sourceAsset(new AssetTypeNative())
-                    .sourceAmount("100")
+                    .sourceAmount("1000")
                     .destinationAssets(List.of(yxlmAsset)
                     ).execute().getRecords();
 
@@ -74,8 +73,6 @@ public class StellarPPBotScheduler {
                             }
                         }
                     });
-
-            HORIZON_INDEX = HORIZON_INDEX == 1 ? 0 : 1;
         } catch (Exception e) {
             log.error("An error occured during executing scheduler");
         }
