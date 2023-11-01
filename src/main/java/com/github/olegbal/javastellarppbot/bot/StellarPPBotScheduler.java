@@ -48,7 +48,7 @@ public class StellarPPBotScheduler {
 
             Stream.of(xlmPaths)
                     .flatMap(List::stream)
-                    .filter(pathResponse -> {
+                    .forEach(pathResponse -> {
                         BigDecimal sourceAmount = new BigDecimal(pathResponse.getSourceAmount());
                         BigDecimal destinationAmount = new BigDecimal(pathResponse.getDestinationAmount());
 
@@ -62,10 +62,18 @@ public class StellarPPBotScheduler {
                                         pathResponse.getDestinationAmount()
                                 );
                             }
+                        } else if (sourceAmount.compareTo(destinationAmount) > 0) {
+                            BigDecimal profitPercentage = percentageDifference(sourceAmount, destinationAmount);
+                            if (profitPercentage.compareTo(new BigDecimal("0.5")) > -1) {
+                                log.info("NEW PROFIT TRIGGERED SOURCE ASSET: {},SOURCE AMOUNT: {}, DEST: {}, DEST AMOUNT: {}",
+                                        pathResponse.getDestinationAsset(),
+                                        pathResponse.getDestinationAmount(),
+                                        pathResponse.getSourceAsset(),
+                                        pathResponse.getSourceAmount()
+                                );
+                            }
                         }
-
-                        return true;
-                    }).toList();
+                    });
 
             HORIZON_INDEX = HORIZON_INDEX == 1 ? 0 : 1;
         } catch (Exception e) {
