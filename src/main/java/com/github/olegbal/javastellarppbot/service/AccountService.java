@@ -12,7 +12,7 @@ import java.io.IOException;
 @Service
 public class AccountService {
 
-    @Value("${account.key :''}")
+    @Value("${account.key:''}")
     private String accountKey;
 
     private final HorizonServerManager horizonServerManager;

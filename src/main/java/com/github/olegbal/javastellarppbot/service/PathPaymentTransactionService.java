@@ -63,12 +63,14 @@ public class PathPaymentTransactionService {
             );
 
             TransactionBuilder tBuilder = new TransactionBuilder(account, Network.PUBLIC);
-            Transaction transaction = tBuilder.addOperation(ppSendBuilder.build())
+            Transaction transaction = tBuilder
+                    .addOperation(ppSendBuilder.build())
                     .setBaseFee(1000)
                     .addPreconditions(
                             TransactionPreconditions
                                     .builder()
-                                    .timeBounds(TimeBounds.expiresAfter(10))
+//                                    FIXME FIND PROPER VALUE.
+                                    .timeBounds(TimeBounds.expiresAfter(5000))
                                     .build()
                     )
                     .build();
@@ -77,11 +79,9 @@ public class PathPaymentTransactionService {
 
             try {
                 SubmitTransactionResponse response = server.submitTransaction(transaction);
-                System.out.println("Success!");
-                System.out.println(response.getHash());
+                log.info("Transaction passed! {}" ,response.getHash());
             } catch (Exception e) {
-                System.out.println("Something went wrong!");
-                System.out.println(e.getMessage());
+                log.info("Transaction failed {}", e.getMessage());
             }
         }
     }

@@ -2,6 +2,8 @@ services:
   bot:
     image: olegbal/stellar-pp-java-bot:latest
     container_name: pp-bot
+    env_file:
+      - bot.env
     ports:
       - "8080:8080"
     restart: always
