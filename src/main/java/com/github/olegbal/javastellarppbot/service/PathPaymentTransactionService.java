@@ -79,7 +79,11 @@ public class PathPaymentTransactionService {
 
             try {
                 SubmitTransactionResponse response = server.submitTransaction(transaction);
-                log.info("Transaction passed! {}" ,response.getHash());
+                if (response.isSuccess()) {
+                    log.info("Transaction passed! {}", response.getHash());
+                } else {
+                    log.info("Transaction failed without exceptions");
+                }
             } catch (Exception e) {
                 log.info("Transaction failed {}", e.getMessage());
             }
