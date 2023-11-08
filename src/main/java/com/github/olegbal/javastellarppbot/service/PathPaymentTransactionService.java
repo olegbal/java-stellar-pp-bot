@@ -65,7 +65,7 @@ public class PathPaymentTransactionService {
             TransactionBuilder tBuilder = new TransactionBuilder(account, Network.PUBLIC);
             Transaction transaction = tBuilder
                     .addOperation(ppSendBuilder.build())
-                    .setBaseFee(1000)
+                    .setBaseFee(10000)
                     .addPreconditions(
                             TransactionPreconditions
                                     .builder()
