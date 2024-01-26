@@ -66,8 +66,7 @@ public class PathPaymentTransactionService {
                     .addPreconditions(
                             TransactionPreconditions
                                     .builder()
-//                                    FIXME FIND PROPER VALUE.
-                                    .timeBounds(TimeBounds.expiresAfter(5000))
+                                    .timeBounds(TimeBounds.expiresAfter(120))
                                     .build()
                     )
                     .build();
