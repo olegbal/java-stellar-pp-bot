@@ -9,10 +9,7 @@ import org.stellar.sdk.responses.SubmitTransactionResponse;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.github.olegbal.javastellarppbot.utils.Constants.RESERVED_NATIVE_AMOUNT;
@@ -82,7 +79,9 @@ public class PathPaymentTransactionService {
                 if (response.isSuccess()) {
                     log.info("Transaction passed! {}", response.getHash());
                 } else {
-                    log.info("Transaction failed without exceptions");
+                    String opCodes = response.getExtras().getResultCodes().getOperationsResultCodes().stream().collect(Collectors.joining(" ,"));
+                    String txResultCode = response.getExtras().getResultCodes().getTransactionResultCode();
+                    log.info("Transaction failed {}, {}", txResultCode, opCodes);
                 }
             } catch (Exception e) {
                 log.info("Transaction failed {}", e.getMessage());
