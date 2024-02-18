@@ -26,12 +26,12 @@ public class PathPaymentTransactionService {
         this.horizonServerManager = horizonServerManager;
     }
 
-    public void doStrictSend(Asset asset1, Asset asset2, BigDecimal sourceAmount, BigDecimal destAmount, BigDecimal profitPercentage) {
+    public void doStrictSend(Asset asset1, Asset asset2, BigDecimal sourceAmount, BigDecimal destAmount) {
         Server server = horizonServerManager.getRelevantServer();
 
         List<Asset> assetsToFilter = List.of(asset1, asset2);
 
-        AccountResponse account = null;
+        AccountResponse account;
         try {
             account = accountService.getAccount();
         } catch (IOException e) {
@@ -78,12 +78,12 @@ public class PathPaymentTransactionService {
                 if (response.isSuccess()) {
                     log.info("Transaction passed! {}", response.getHash());
                 } else {
-                    String opCodes = response.getExtras().getResultCodes().getOperationsResultCodes().stream().collect(Collectors.joining(" ,"));
+                    String opCodes = String.join(" ,", response.getExtras().getResultCodes().getOperationsResultCodes());
                     String txResultCode = response.getExtras().getResultCodes().getTransactionResultCode();
                     log.info("Transaction failed {}, {}", txResultCode, opCodes);
                 }
             } catch (Exception e) {
-                log.info("Transaction failed {}", e.getMessage());
+                log.info("Transaction failed", e);
             }
         }
     }

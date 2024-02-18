@@ -1,5 +1,6 @@
+# List of horizons comma separated. Example:  https://horizon.stellar.org, https://stellarterm.com/horizon
 stellar:
-  horizons: https://horizon.stellar.org, https://stellarterm.com/horizon
+  horizons: ${STELLAR_HORIZONS}
 
 logging:
   file:

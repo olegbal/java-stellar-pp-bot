@@ -1,9 +1,9 @@
 package com.github.olegbal.javastellarppbot.bot;
 
-import com.github.olegbal.javastellarppbot.bot.service.AccountService;
 import com.github.olegbal.javastellarppbot.bot.service.PathPaymentTransactionService;
 import com.github.olegbal.javastellarppbot.bot.service.StellarPathFinderService;
 import com.github.olegbal.javastellarppbot.utils.Constants;
+import com.github.olegbal.javastellarppbot.utils.ProfitDifference;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static com.github.olegbal.javastellarppbot.utils.MathUtils.percentageDifference;
+import static com.github.olegbal.javastellarppbot.utils.ProfitUtils.calculateDifference;
 
 @Service
 @Slf4j
@@ -25,16 +25,13 @@ public class StellarPPBotScheduler {
 
     private final HorizonServerManager horizonServerManager;
     private final StellarPathFinderService stellarPathFinderService;
-    private final AccountService accountService;
-
     private final PathPaymentTransactionService pathPaymentTransactionService;
 
     public StellarPPBotScheduler(HorizonServerManager horizonServerManager,
                                  StellarPathFinderService stellarPathFinderService,
-                                 AccountService accountService, PathPaymentTransactionService pathPaymentTransactionService) {
+                                 PathPaymentTransactionService pathPaymentTransactionService) {
         this.horizonServerManager = horizonServerManager;
         this.stellarPathFinderService = stellarPathFinderService;
-        this.accountService = accountService;
         this.pathPaymentTransactionService = pathPaymentTransactionService;
     }
 
@@ -57,9 +54,9 @@ public class StellarPPBotScheduler {
                 BigDecimal destinationAmount = new BigDecimal(pathResponse.getDestinationAmount());
 
                 if (destinationAmount.compareTo(sourceAmount) > 0) {
-                    BigDecimal profitPercentage = percentageDifference(destinationAmount, sourceAmount);
-                    if (profitPercentage.compareTo(new BigDecimal("1")) > -1) {
-                        log.info("NEW PROFIT TRIGGERED SOURCE ASSET: {},SOURCE AMOUNT: {}, DEST: {}, DEST AMOUNT: {}",
+                    ProfitDifference diff = calculateDifference(destinationAmount, sourceAmount);
+                    if (diff.percents() > 0.0) {
+                        log.info("NEW PROFIT TRIGGERED SOURCE ASSET: {}, SOURCE AMOUNT: {}, DEST: {}, DEST AMOUNT: {}",
                                 pathResponse.getSourceAsset(),
                                 pathResponse.getSourceAmount(),
                                 pathResponse.getDestinationAsset(),
@@ -70,8 +67,7 @@ public class StellarPPBotScheduler {
                                 pathResponse.getSourceAsset(),
                                 pathResponse.getDestinationAsset(),
                                 sourceAmount,
-                                sourceAmount,
-                                profitPercentage);
+                                sourceAmount);
                     }
                 }
             });
