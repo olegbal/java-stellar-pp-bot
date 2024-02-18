@@ -55,7 +55,7 @@ public class StellarPPBotScheduler {
 
                 if (destinationAmount.compareTo(sourceAmount) > 0) {
                     ProfitDifference diff = calculateDifference(destinationAmount, sourceAmount);
-                    if (diff.percents() > 0.0) {
+                    if (diff.percents() > 1.0) {
                         log.info("NEW PROFIT TRIGGERED SOURCE ASSET: {}, SOURCE AMOUNT: {}, DEST: {}, DEST AMOUNT: {}",
                                 pathResponse.getSourceAsset(),
                                 pathResponse.getSourceAmount(),
