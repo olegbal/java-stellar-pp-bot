@@ -70,7 +70,7 @@ public class StellarPPBotScheduler {
                                 pathResponse.getSourceAsset(),
                                 pathResponse.getDestinationAsset(),
                                 sourceAmount,
-                                destinationAmount.divide(new BigDecimal(2)),
+                                sourceAmount,
                                 profitPercentage);
                     }
                 }
