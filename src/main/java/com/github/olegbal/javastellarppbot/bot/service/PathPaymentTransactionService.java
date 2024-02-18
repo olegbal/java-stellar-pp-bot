@@ -1,4 +1,4 @@
-package com.github.olegbal.javastellarppbot.service;
+package com.github.olegbal.javastellarppbot.bot.service;
 
 import com.github.olegbal.javastellarppbot.bot.HorizonServerManager;
 import lombok.extern.slf4j.Slf4j;

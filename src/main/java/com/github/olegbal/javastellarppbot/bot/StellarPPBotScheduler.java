@@ -1,7 +1,8 @@
 package com.github.olegbal.javastellarppbot.bot;
 
-import com.github.olegbal.javastellarppbot.service.AccountService;
-import com.github.olegbal.javastellarppbot.service.PathPaymentTransactionService;
+import com.github.olegbal.javastellarppbot.bot.service.AccountService;
+import com.github.olegbal.javastellarppbot.bot.service.PathPaymentTransactionService;
+import com.github.olegbal.javastellarppbot.bot.service.StellarPathFinderService;
 import com.github.olegbal.javastellarppbot.utils.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -69,7 +70,7 @@ public class StellarPPBotScheduler {
                                 pathResponse.getSourceAsset(),
                                 pathResponse.getDestinationAsset(),
                                 sourceAmount,
-                                destinationAmount,
+                                destinationAmount.divide(new BigDecimal(2)),
                                 profitPercentage);
                     }
                 }

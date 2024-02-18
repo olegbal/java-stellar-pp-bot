@@ -1,4 +1,4 @@
-package com.github.olegbal.javastellarppbot.bot;
+package com.github.olegbal.javastellarppbot.bot.service;
 
 import org.springframework.stereotype.Service;
 import org.stellar.sdk.Asset;
