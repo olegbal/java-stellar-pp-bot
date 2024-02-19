@@ -8,10 +8,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class PaymentConfigService {
 
-    @Value("payment.base-fee")
+    @Value("${payment.base-fee}")
     private long baseFee;
 
-    @Value("payment.profit-percent")
+    @Value("${payment.profit-percent}")
     private int profitPercentage;
 
 }
