@@ -9,7 +9,9 @@ import org.stellar.sdk.responses.SubmitTransactionResponse;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.github.olegbal.javastellarppbot.utils.Constants.RESERVED_NATIVE_AMOUNT;
@@ -20,14 +22,17 @@ public class PathPaymentTransactionService {
 
     private final AccountService accountService;
     private final HorizonServerManager horizonServerManager;
+    private final PaymentConfigService paymentConfigService;
 
-    public PathPaymentTransactionService(AccountService accountService, HorizonServerManager horizonServerManager) {
+    public PathPaymentTransactionService(AccountService accountService, HorizonServerManager horizonServerManager, PaymentConfigService paymentConfigService) {
         this.accountService = accountService;
         this.horizonServerManager = horizonServerManager;
+        this.paymentConfigService = paymentConfigService;
     }
 
     public void doStrictSend(Asset asset1, Asset asset2, BigDecimal sourceAmount, BigDecimal destAmount) {
         Server server = horizonServerManager.getRelevantServer();
+        log.info("Starting doStrictSend({}, {}, {}, {})", asset1, asset2, sourceAmount, destAmount);
 
         List<Asset> assetsToFilter = List.of(asset1, asset2);
 
@@ -62,7 +67,7 @@ public class PathPaymentTransactionService {
             TransactionBuilder tBuilder = new TransactionBuilder(account, Network.PUBLIC);
             Transaction transaction = tBuilder
                     .addOperation(ppSendBuilder.build())
-                    .setBaseFee(10000)
+                    .setBaseFee(paymentConfigService.getBaseFee())
                     .addPreconditions(
                             TransactionPreconditions
                                     .builder()
@@ -89,6 +94,15 @@ public class PathPaymentTransactionService {
     }
 
     private boolean isGreaterThanReserve(BigDecimal balance1, BigDecimal balance2) {
-        return balance1.compareTo(RESERVED_NATIVE_AMOUNT) > 0 && balance2.compareTo(RESERVED_NATIVE_AMOUNT) > 0;
+        boolean b1GreaterThanReserve = balance1.compareTo(RESERVED_NATIVE_AMOUNT) > 0;
+        boolean b2GreaterThanReserve = balance2.compareTo(RESERVED_NATIVE_AMOUNT) > 0;
+        if(b1GreaterThanReserve && b2GreaterThanReserve) {
+            return true;
+        }
+        else {
+            log.warn("Balance of selected amount is lower than reserved value. Cancelling path payment... balance1 : {}, balance2: {} ", balance1, balance2);
+            return false;
+        }
+
     }
 }

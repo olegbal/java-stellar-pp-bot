@@ -2,6 +2,10 @@
 stellar:
   horizons: ${STELLAR_HORIZONS:https://horizon.stellar.org}
 
+payment:
+  profit-percent: ${BOT_PROFIT_PERCENTAGE:5}
+  base-fee: ${STELLAR_BASE_FEE:1000}
+
 logging:
   file:
     path: ./
