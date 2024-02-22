@@ -78,7 +78,7 @@ public class StellarPPBotScheduler {
                 }
             });
         } catch (Exception e) {
-            log.error("An error occured during executing scheduler");
+            log.error("An error occured during executing scheduler", e);
         }
 
     }
