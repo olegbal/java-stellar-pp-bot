@@ -14,4 +14,7 @@ public class PaymentConfigService {
     @Value("${payment.profit-percent}")
     private int profitPercentage;
 
+    @Value("${payment.timeout-seconds}")
+    private int paymentTimeout;
+
 }

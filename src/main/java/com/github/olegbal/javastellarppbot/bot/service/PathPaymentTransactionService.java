@@ -71,7 +71,7 @@ public class PathPaymentTransactionService {
                     .addPreconditions(
                             TransactionPreconditions
                                     .builder()
-                                    .timeBounds(TimeBounds.expiresAfter(120))
+                                    .timeBounds(TimeBounds.expiresAfter(paymentConfigService.getPaymentTimeout()))
                                     .build()
                     )
                     .build();

@@ -4,7 +4,8 @@ stellar:
 
 payment:
   profit-percent: ${BOT_PROFIT_PERCENTAGE:5}
-  base-fee: ${STELLAR_BASE_FEE:1000}
+  base-fee: ${STELLAR_BASE_FEE:100}
+  timeout-seconds: ${STELLAR_PAYMENT_TIMEOUT:60}
 
 logging:
   file:

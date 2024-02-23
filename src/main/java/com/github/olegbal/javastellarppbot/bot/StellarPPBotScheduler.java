@@ -39,7 +39,7 @@ public class StellarPPBotScheduler {
         this.paymentConfigService = paymentConfigService;
     }
 
-    @Scheduled(timeUnit = TimeUnit.SECONDS, fixedRate = 2)
+    @Scheduled(timeUnit = TimeUnit.SECONDS, fixedRate = 1)
     public void stellarBotStarter() {
         try {
             Server server = horizonServerManager.getRelevantServer();
