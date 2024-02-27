@@ -80,7 +80,7 @@ public class PathPaymentTransactionService {
             transaction.sign(accountService.getKeyPair());
 
             try {
-                SubmitTransactionResponse response = server.submitTransaction(transaction);
+                SubmitTransactionResponse response = server.submitTransaction(transaction, true);
                 if (response.isSuccess()) {
                     log.info("Transaction passed! {}", response.getHash());
                 } else {
