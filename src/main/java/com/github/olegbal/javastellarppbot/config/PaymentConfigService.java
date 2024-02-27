@@ -1,4 +1,4 @@
-package com.github.olegbal.javastellarppbot.bot.service;
+package com.github.olegbal.javastellarppbot.config;
 
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;

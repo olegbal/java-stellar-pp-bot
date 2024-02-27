@@ -1,6 +1,7 @@
 package com.github.olegbal.javastellarppbot.bot.service;
 
 import com.github.olegbal.javastellarppbot.bot.HorizonServerManager;
+import com.github.olegbal.javastellarppbot.config.PaymentConfigService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.stellar.sdk.*;
@@ -30,9 +31,9 @@ public class PathPaymentTransactionService {
         this.paymentConfigService = paymentConfigService;
     }
 
-    public void doStrictSend(Asset asset1, Asset asset2, BigDecimal sourceAmount, BigDecimal destAmount) {
+    public void doStrictSend(Asset asset1, Asset asset2, BigDecimal sourceAmount, BigDecimal destAmount, List<Asset> path) {
         Server server = horizonServerManager.getRelevantServer();
-        log.info("Starting doStrictSend({}, {}, {}, {})", asset1, asset2, sourceAmount, destAmount);
+        log.info("Starting doStrictSend({}, {}, {}, {}, {})", asset1, asset2, sourceAmount, destAmount, path);
 
         List<Asset> assetsToFilter = List.of(asset1, asset2);
 
@@ -61,8 +62,8 @@ public class PathPaymentTransactionService {
                     sourceAmount.toString(),
                     account.getAccountId(),
                     asset2,
-                    destAmount.toString()
-            );
+                    destAmount.toString())
+                    .setPath(path.toArray(Asset[]::new));
 
             TransactionBuilder tBuilder = new TransactionBuilder(account, Network.PUBLIC);
             Transaction transaction = tBuilder
