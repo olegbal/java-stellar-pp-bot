@@ -62,7 +62,7 @@ public class StellarPPBotScheduler {
 
                 if (destinationAmount.compareTo(sourceAmount) > 0) {
                     ProfitDifference diff = calculateDifference(destinationAmount, sourceAmount);
-                    if (diff.percents() > 0.1) {
+                    if (diff.percents() > paymentConfigService.getProfitPercentage()) {
                         String pathString = pathResponse.getPath().stream()
                                 .map(asset -> ((AssetTypeCreditAlphaNum) asset).getCode())
                                 .collect(Collectors.joining(" -> "));

@@ -12,7 +12,7 @@ public class PaymentConfigService {
     private long baseFee;
 
     @Value("${payment.profit-percent}")
-    private int profitPercentage;
+    private double profitPercentage;
 
     @Value("${payment.timeout-seconds}")
     private int paymentTimeout;
