@@ -1,12 +1,18 @@
 package com.github.olegbal.javastellarppbot.bot.service;
 
 import com.github.olegbal.javastellarppbot.bot.HorizonServerManager;
+import com.github.olegbal.javastellarppbot.bot.utils.AssetUtils;
 import com.github.olegbal.javastellarppbot.config.PaymentConfigService;
+import com.github.olegbal.javastellarppbot.repository.PPOpType;
+import com.github.olegbal.javastellarppbot.repository.PPStatisticRecord;
+import com.github.olegbal.javastellarppbot.repository.PPStatisticsRepository;
+import com.github.olegbal.javastellarppbot.repository.PathUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.stellar.sdk.*;
 import org.stellar.sdk.responses.AccountResponse;
 import org.stellar.sdk.responses.SubmitTransactionResponse;
+import org.stellar.sdk.xdr.AlphaNum12;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -15,7 +21,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.github.olegbal.javastellarppbot.utils.Constants.RESERVED_NATIVE_AMOUNT;
+import static com.github.olegbal.javastellarppbot.bot.utils.AssetUtils.getCode;
+import static com.github.olegbal.javastellarppbot.bot.utils.AssetUtils.getIssuer;
+import static com.github.olegbal.javastellarppbot.bot.utils.Constants.RESERVED_NATIVE_AMOUNT;
 
 @Slf4j
 @Service
@@ -24,14 +32,20 @@ public class PathPaymentTransactionService {
     private final AccountService accountService;
     private final HorizonServerManager horizonServerManager;
     private final PaymentConfigService paymentConfigService;
+    private final PPStatisticsRepository statisticsRepository;
 
-    public PathPaymentTransactionService(AccountService accountService, HorizonServerManager horizonServerManager, PaymentConfigService paymentConfigService) {
+    public PathPaymentTransactionService(AccountService accountService, HorizonServerManager horizonServerManager, PaymentConfigService paymentConfigService, PPStatisticsRepository statisticsRepository) {
         this.accountService = accountService;
         this.horizonServerManager = horizonServerManager;
         this.paymentConfigService = paymentConfigService;
+        this.statisticsRepository = statisticsRepository;
     }
 
-    public void doStrictSend(Asset asset1, Asset asset2, BigDecimal sourceAmount, BigDecimal destAmount, List<Asset> path) {
+    public void doStrictSend(Asset asset1, Asset asset2,
+                             BigDecimal sourceAmount,
+                             BigDecimal destAmount,
+                             List<Asset> path,
+                             PPOpType ppOpType) {
         Server server = horizonServerManager.getRelevantServer();
         log.info("Starting doStrictSend({}, {}, {}, {}, {})", asset1, asset2, sourceAmount, destAmount, path);
 
@@ -83,10 +97,40 @@ public class PathPaymentTransactionService {
                 SubmitTransactionResponse response = server.submitTransaction(transaction, true);
                 if (response.isSuccess()) {
                     log.info("Transaction passed! {}", response.getHash());
+
+                    statisticsRepository.insert(
+                            new PPStatisticRecord(
+                                    null,
+                                    response.getHash(),
+                                    getCode(asset1),
+                                    getIssuer(asset1),
+                                    sourceAmount,
+                                    getCode(asset2),
+                                    getIssuer(asset2),
+                                    destAmount,
+                                    PathUtils.buildStringPath(path, " -> "),
+                                    PPOpType.PROFIT,
+                                    true,
+                                    ""));
                 } else {
                     String opCodes = String.join(" ,", response.getExtras().getResultCodes().getOperationsResultCodes());
                     String txResultCode = response.getExtras().getResultCodes().getTransactionResultCode();
                     log.info("Transaction failed {}, {}", txResultCode, opCodes);
+
+                    statisticsRepository.insert(
+                            new PPStatisticRecord(
+                                    null,
+                                    response.getHash(),
+                                    getCode(asset1),
+                                    getIssuer(asset1),
+                                    sourceAmount,
+                                    getCode(asset2),
+                                    getIssuer(asset2),
+                                    destAmount,
+                                    PathUtils.buildStringPath(path, " -> "),
+                                    PPOpType.PROFIT,
+                                    false,
+                                    opCodes));
                 }
             } catch (Exception e) {
                 log.info("Transaction failed", e);

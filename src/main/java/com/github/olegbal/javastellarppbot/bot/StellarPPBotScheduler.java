@@ -3,8 +3,10 @@ package com.github.olegbal.javastellarppbot.bot;
 import com.github.olegbal.javastellarppbot.bot.service.PathPaymentTransactionService;
 import com.github.olegbal.javastellarppbot.bot.service.StellarPathFinderService;
 import com.github.olegbal.javastellarppbot.config.PaymentConfigService;
-import com.github.olegbal.javastellarppbot.utils.Constants;
-import com.github.olegbal.javastellarppbot.utils.ProfitDifference;
+import com.github.olegbal.javastellarppbot.bot.utils.Constants;
+import com.github.olegbal.javastellarppbot.bot.utils.ProfitDifference;
+import com.github.olegbal.javastellarppbot.repository.PPOpType;
+import com.github.olegbal.javastellarppbot.repository.PathUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -21,8 +23,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static com.github.olegbal.javastellarppbot.AssetUtils.getCode;
-import static com.github.olegbal.javastellarppbot.utils.ProfitUtils.calculateDifference;
+import static com.github.olegbal.javastellarppbot.bot.utils.AssetUtils.getCode;
+import static com.github.olegbal.javastellarppbot.bot.utils.ProfitUtils.calculateDifference;
 
 @Service
 @Slf4j
@@ -63,9 +65,7 @@ public class StellarPPBotScheduler {
                 if (destinationAmount.compareTo(sourceAmount) > 0) {
                     ProfitDifference diff = calculateDifference(destinationAmount, sourceAmount);
                     if (diff.percents() > paymentConfigService.getProfitPercentage()) {
-                        String pathString = pathResponse.getPath().stream()
-                                .map(asset -> ((AssetTypeCreditAlphaNum) asset).getCode())
-                                .collect(Collectors.joining(" -> "));
+                        String pathString = PathUtils.buildStringPath(pathResponse.getPath(), " -> ");
 
                         log.info("NEW PROFIT TRIGGERED SOURCE ASSET: {}, SOURCE AMOUNT: {}, DEST: {}, DEST AMOUNT: {}, PATH: {}",
                                 pathResponse.getSourceAsset(),
@@ -82,7 +82,8 @@ public class StellarPPBotScheduler {
                                 pathResponse.getDestinationAsset(),
                                 sourceAmount,
                                 sourceAmount.add(halfOfDifference),
-                                pathResponse.getPath());
+                                pathResponse.getPath(),
+                                PPOpType.PROFIT);
                     }
                 }
             });

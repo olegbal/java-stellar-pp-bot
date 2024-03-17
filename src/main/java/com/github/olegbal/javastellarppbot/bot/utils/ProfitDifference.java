@@ -1,4 +1,4 @@
-package com.github.olegbal.javastellarppbot.utils;
+package com.github.olegbal.javastellarppbot.bot.utils;
 
 import java.math.BigDecimal;
 
