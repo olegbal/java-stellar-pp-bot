@@ -1,4 +1,4 @@
-package com.github.olegbal.javastellarppbot.repository;
+package com.github.olegbal.javastellarppbot.bot.utils;
 
 import org.stellar.sdk.Asset;
 import org.stellar.sdk.AssetTypeCreditAlphaNum;

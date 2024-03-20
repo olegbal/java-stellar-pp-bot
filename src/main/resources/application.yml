@@ -11,3 +11,10 @@ logging:
   file:
     path: ./
     name: "server.log"
+
+spring:
+  data:
+    mongodb:
+      uri: ${MONGODB_URI}
+bot:
+  name: ${BOT_NAME:default}

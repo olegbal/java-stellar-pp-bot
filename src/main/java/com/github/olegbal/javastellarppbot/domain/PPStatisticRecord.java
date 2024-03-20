@@ -1,6 +1,7 @@
-package com.github.olegbal.javastellarppbot.repository;
+package com.github.olegbal.javastellarppbot.domain;
 
 
+import com.github.olegbal.javastellarppbot.bot.utils.PPOpType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,6 +10,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Document(collection = "pptransactions")
 @Data
@@ -28,4 +31,6 @@ public class PPStatisticRecord {
     private PPOpType opType;
     private boolean succeed;
     private String opCode;
+    private String instanceName;
+    private LocalDateTime dateTime;
 }
