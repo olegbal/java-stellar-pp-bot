@@ -3,7 +3,8 @@ stellar:
   horizons: ${STELLAR_HORIZONS:https://horizon.stellar.org}
 
 payment:
-  profit-percent: ${BOT_PROFIT_PERCENTAGE:5}
+  trigger-profit-percent: ${BOT_PROFIT_TRIGGER_PERCENTAGE:3}
+  profit-percent: ${BOT_PROFIT_PERCENTAGE:1}
   base-fee: ${STELLAR_BASE_FEE:100}
   timeout-seconds: ${STELLAR_PAYMENT_TIMEOUT:60}
 

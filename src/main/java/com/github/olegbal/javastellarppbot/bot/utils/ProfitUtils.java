@@ -17,4 +17,12 @@ public class ProfitUtils {
 
         return new ProfitDifference(percentDifference.doubleValue(), difference.abs());
     }
+
+    public static BigDecimal calculateTotalProfitByPercent(BigDecimal initialAmount, double percent) {
+        return initialAmount.add(
+                initialAmount
+                        .divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP)
+                        .multiply(BigDecimal.valueOf(percent))
+        );
+    }
 }

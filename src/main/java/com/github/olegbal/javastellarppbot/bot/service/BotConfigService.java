@@ -32,6 +32,9 @@ public class BotConfigService {
     @Value("${bot.name}")
     private String botName;
 
+    @Value("${payment.trigger-profit-percent}")
+    private double triggerProfitPercent;
+
     private final StableAssetConfigRepository repository;
 
     public BotConfigService(StableAssetConfigRepository repository) {

@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.github.olegbal.javastellarppbot.bot.utils.AssetUtils.getCode;
 import static com.github.olegbal.javastellarppbot.bot.utils.ProfitUtils.calculateDifference;
+import static com.github.olegbal.javastellarppbot.bot.utils.ProfitUtils.calculateTotalProfitByPercent;
 import static com.github.olegbal.javastellarppbot.bot.utils.StableAssetConfigUtils.findGroupConfig;
 
 @Service
@@ -62,7 +63,7 @@ public class StellarPPBotScheduler {
 
                 if (destinationAmount.compareTo(sourceAmount) > 0) {
                     ProfitDifference diff = calculateDifference(destinationAmount, sourceAmount);
-                    if (diff.percents() > botConfigService.getProfitPercentage()) {
+                    if (diff.percents() > botConfigService.getTriggerProfitPercent()) {
                         String pathString = PathUtils.buildStringPath(pathResponse.getPath(), " -> ");
 
                         Asset sourceAsset = pathResponse.getSourceAsset();
@@ -75,13 +76,13 @@ public class StellarPPBotScheduler {
                                 String.join(" -> ", getCode(sourceAsset), pathString, getCode(destAsset))
                         );
 
-                        BigDecimal halfOfDifference = diff.value().divide(new BigDecimal("2"), RoundingMode.HALF_UP);
+//                        BigDecimal halfOfDifference = diff.value().divide(new BigDecimal("2"), RoundingMode.HALF_UP);
 
                         pathPaymentTransactionService.doStrictSend(
                                 sourceAsset,
                                 destAsset,
                                 sourceAmount,
-                                sourceAmount.add(halfOfDifference),
+                                calculateTotalProfitByPercent(sourceAmount, botConfigService.getProfitPercentage()),
                                 pathResponse.getPath(),
                                 PPOpType.PROFIT,
                                 findGroupConfig(globalConfig, Pair.of(sourceAsset, destAsset))
