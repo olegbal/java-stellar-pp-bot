@@ -2,10 +2,7 @@ package com.github.olegbal.javastellarppbot.bot.service;
 
 import com.github.olegbal.javastellarppbot.bot.HorizonServerManager;
 import com.github.olegbal.javastellarppbot.bot.utils.PPOpType;
-import com.github.olegbal.javastellarppbot.bot.utils.PathUtils;
-import com.github.olegbal.javastellarppbot.domain.PPStatisticRecord;
 import com.github.olegbal.javastellarppbot.domain.config.StableAssetGroupConfig;
-import com.github.olegbal.javastellarppbot.repository.PPStatisticsRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.stellar.sdk.*;
@@ -14,13 +11,9 @@ import org.stellar.sdk.responses.SubmitTransactionResponse;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-
-import static com.github.olegbal.javastellarppbot.bot.utils.AssetUtils.getCode;
-import static com.github.olegbal.javastellarppbot.bot.utils.AssetUtils.getIssuer;
 
 @Slf4j
 @Service
@@ -28,14 +21,13 @@ public class PathPaymentTransactionService {
 
     private final AccountService accountService;
     private final HorizonServerManager horizonServerManager;
-    private final PPStatisticsRepository statisticsRepository;
     private final BotConfigService botConfigService;
 
-    public PathPaymentTransactionService(AccountService accountService, HorizonServerManager horizonServerManager,
-                                         PPStatisticsRepository statisticsRepository, BotConfigService botConfigService) {
+    public PathPaymentTransactionService(AccountService accountService,
+                                         HorizonServerManager horizonServerManager,
+                                         BotConfigService botConfigService) {
         this.accountService = accountService;
         this.horizonServerManager = horizonServerManager;
-        this.statisticsRepository = statisticsRepository;
         this.botConfigService = botConfigService;
     }
 
@@ -74,46 +66,10 @@ public class PathPaymentTransactionService {
                 SubmitTransactionResponse response = server.submitTransaction(transaction, true);
                 if (response.isSuccess()) {
                     log.info("Transaction passed! {}", response.getHash());
-
-                    statisticsRepository.insert(
-                            new PPStatisticRecord(
-                                    null,
-                                    response.getHash(),
-                                    getCode(asset1),
-                                    getIssuer(asset1),
-                                    sourceAmount,
-                                    getCode(asset2),
-                                    getIssuer(asset2),
-                                    destAmount,
-                                    PathUtils.buildStringPath(path, " -> "),
-                                    ppOpType,
-                                    true,
-                                    "tx_passed",
-                                    botConfigService.getBotName(),
-                                    LocalDateTime.now())
-                    );
                 } else {
                     String opCodes = String.join(" ,", response.getExtras().getResultCodes().getOperationsResultCodes());
                     String txResultCode = response.getExtras().getResultCodes().getTransactionResultCode();
                     log.info("Transaction failed {}, {}", txResultCode, opCodes);
-
-                    statisticsRepository.insert(
-                            new PPStatisticRecord(
-                                    null,
-                                    response.getHash(),
-                                    getCode(asset1),
-                                    getIssuer(asset1),
-                                    sourceAmount,
-                                    getCode(asset2),
-                                    getIssuer(asset2),
-                                    destAmount,
-                                    PathUtils.buildStringPath(path, " -> "),
-                                    ppOpType,
-                                    false,
-                                    opCodes,
-                                    botConfigService.getBotName(),
-                                    LocalDateTime.now())
-                    );
                 }
             } catch (Exception e) {
                 log.info("Transaction failed", e);
